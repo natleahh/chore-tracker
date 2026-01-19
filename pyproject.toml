@@ -8,8 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "sqlmodel (>=0.0.31,<0.0.32)",
     "fastapi (>=0.128.0,<0.129.0)",
-    "sqlmodel (>=0.0.31,<0.0.32)"
 ]
 
 [tool.poetry]
@@ -17,7 +17,27 @@ packages = [{ include = "app" }]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.2"
+ruff = "^0.14.13"
+pre-commit = "^4.5.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 90
+
+[tool.ruff.lint]
+extend-select = [
+  "UP",  # pyupgrade
+  "D",   # pydocstyle
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
