@@ -7,25 +7,28 @@ from app import services
 from app.db import SessionDep, tables
 
 
-def get_service(session: SessionDep):
-    return services.Chore(session=session)
+def _get_service(session: SessionDep):
+    yield services.Chore(session=session)
 
 
-ServiceDep = Annotated[services.Chore, Depends(get_service)]
+ServiceDep = Annotated[services.Chore, Depends(_get_service)]
 
 router = APIRouter()
 
 
-@router.get("/")
+@router.get('/')
 def read_list(service: ServiceDep):
+    """Reads all chores from the database."""
     return service.read_all()
 
 
-@router.get("/{id}")
+@router.get('/{id}')
 def read(service: ServiceDep, id: int):
+    """Reads a chore from the database by ID."""
     return service.read_by_pk(primary_key=id)
 
 
-@router.post("/")
+@router.post('/')
 def create_list(service: ServiceDep, new_chore: Annotated[tables.Chore, Form()]):
-    return service.create(new_chore, new_chore)
+    """Adds a new chore to the database."""
+    return service.create(new_chore)

@@ -9,7 +9,7 @@ from app.core.config import config
 
 from . import tables
 
-__all__ = ["tables", "engine", "SessionDep"]
+__all__ = ['tables', 'engine', 'SessionDep']
 
 
 engine = create_engine(config.db_url)
