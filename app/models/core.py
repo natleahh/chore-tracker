@@ -1,6 +1,7 @@
 """Defines underlying data structures of database models."""
 
-from sqlmodel import SQLModel
+from datetime import datetime
+from sqlmodel import Field, SQLModel
 
 
 class Chore(SQLModel):
@@ -8,3 +9,10 @@ class Chore(SQLModel):
 
     name: str
     description: str | None = None
+
+
+class Completion(SQLModel):
+    """Chore completion model."""
+
+    time: datetime
+    chore_id: int = Field(foreign_key='chore.id')
