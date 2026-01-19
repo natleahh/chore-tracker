@@ -1,6 +1,7 @@
 """Defines common service logic for querying SQLite databases."""
 
 from typing import Generic, TypeVar
+from fastapi import HTTPException
 from sqlmodel import SQLModel, Sequence, Session, select
 
 SomeModel = TypeVar('SomeModel', bound=SQLModel)
@@ -18,17 +19,23 @@ class Service(Generic[SomeModel]):
         """Reads all rows from table."""
         return self._db.exec(select(self._table)).all()  # mypy: noqa
 
-    def read_by_pk(self, primary_key: int) -> SomeModel | None:
+    def read_by_pk(self, primary_key: int, raise_error: bool = False) -> SomeModel | None:
         """Reads row from primary key."""
-        return self._db.get(self._table, primary_key)
+        item = self._db.get(self._table, primary_key)
+        if item is None and raise_error:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Item with primary key '{primary_key}' was not found in table {self._table}.",
+            )
+        return item
 
     def create(self, model: SomeModel) -> SomeModel:
         """Adds new row to base and return the validated result."""
-        validated = self._table.model_validate(model)
-        self._db.add(validated)
+        # validated = self._table.model_validate(model)
+        self._db.add(model)
         self._db.commit()
-        self._db.refresh(validated)
-        return validated
+        self._db.refresh(model)
+        return model
 
     def delete(self, primary_key: int) -> bool:
         """Removes row from base from on primary key."""
